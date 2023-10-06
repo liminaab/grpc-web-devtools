@@ -22,6 +22,7 @@ export const NetworkDetails = () => {
       if (error) {
         src.error = error;
       }
+      return src;
     }
   }, [entry]);
 
