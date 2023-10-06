@@ -9,6 +9,7 @@ import './NetworkList.css';
 
 export const NetworkList = () => {
   const log = useSelector(selectFilteredLogs);
+
   return (
     <div className="widget vbox network-list">
       <div className="widget vbox">
@@ -26,26 +27,28 @@ export const NetworkList = () => {
           </div>
           <div className="data-container">
             <AutoSizer disableWidth>
-              {({ height }) => (
-                <List
-                  className="data"
-                  itemCount={log.length}
-                  height={height}
-                  itemSize={21}
-                  itemData={log}
-                  overscanCount={50}
-                >
-                  {({ index, data, style }) => {
-                    return (
-                      <NetworkListRow
-                        log={data[index]}
-                        style={style}
-                        index={index}
-                      />
-                    );
-                  }}
-                </List>
-              )}
+              {({ height }) => {
+                return (
+                  <List
+                    className="data"
+                    itemCount={log.length}
+                    height={height}
+                    itemSize={21}
+                    itemData={log}
+                    overscanCount={50}
+                  >
+                    {({ index, data, style }) => {
+                      return (
+                        <NetworkListRow
+                          log={data[index]}
+                          style={style}
+                          index={index}
+                        />
+                      );
+                    }}
+                  </List>
+                );
+              }}
             </AutoSizer>
           </div>
         </div>

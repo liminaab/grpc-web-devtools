@@ -39,8 +39,8 @@
   padding: 1px 4px;
 }
 
-.data-grid .data .data-row.odd {
-  background-color: var(--network-row-odd);
+.data-grid .data .data-row.even {
+  background-color: var(--network-row-even);
 }
 
 .data-grid .data .data-row:hover {

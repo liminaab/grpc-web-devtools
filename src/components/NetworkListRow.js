@@ -9,10 +9,25 @@ export const NetworkListRow = memo(({ log, style, index }) => {
   const selectedEntry = useSelector((state) => state.network.selectedEntry);
   const dispatch = useDispatch();
 
-  let endpoint = log.endpoint;
-  if (log.method?.endsWith(`Service/${log.endpoint}`)) {
-    const nextEndpoint = log.method.substring(log.method.lastIndexOf('.') + 1);
-    endpoint = nextEndpoint.split('/').map((ep, i, arr) => {
+  return (
+    <div
+      className={`data-row ${index % 2 === 0 ? 'even' : ''} ${
+        log === selectedEntry ? 'selected' : ''
+      } ${log.error ? 'error' : ''} `}
+      style={style}
+      onClick={() => dispatch(selectLogEntry(log))}
+      tabIndex={index}
+    >
+      <MethodIcon methodType={log.methodType} isRequest={!!log.request} />
+      <Endpoint endpoint={log.endpoint} method={log.method} />
+    </div>
+  );
+});
+
+const Endpoint = ({ endpoint, method }) => {
+  if (method?.endsWith(`Service/${endpoint}`)) {
+    const nextEndpoint = method.substring(method.lastIndexOf('.') + 1);
+    return nextEndpoint.split('/').map((ep, i, arr) => {
       const isLastItem = i === arr.length - 1;
       const className = isLastItem ? '' : 'service-path';
       return (
@@ -22,17 +37,5 @@ export const NetworkListRow = memo(({ log, style, index }) => {
       );
     });
   }
-
-  return (
-    <div
-      className={`data-row ${(index + 1) % 2 === 0 ? '' : 'odd'} ${
-        log === selectedEntry ? 'selected' : ''
-      } ${log.error ? 'error' : ''} `}
-      style={style}
-      onClick={() => dispatch(selectLogEntry(log))}
-    >
-      <MethodIcon methodType={log.methodType} isRequest={!!log.request} />
-      {endpoint}
-    </div>
-  );
-});
+  return endpoint;
+};
