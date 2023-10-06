@@ -1,15 +1,13 @@
-// Copyright (c) 2019 SafetyCulture Pty Ltd. All Rights Reserved.
+import React from 'react';
+import { useSelector } from 'react-redux';
+import AutoSizer from 'react-virtualized-auto-sizer';
+import { FixedSizeList as List } from 'react-window';
+import { NetworkListRow } from './NetworkListRow';
+import { selectFilteredLogs } from '../state/network';
 
-import React from "react";
-import { useSelector } from "react-redux";
-import AutoSizer from "react-virtualized-auto-sizer";
-import { FixedSizeList as List } from "react-window";
-import NetworkListRow from "./NetworkListRow";
+import './NetworkList.css';
 
-import "./NetworkList.css";
-import { selectFilteredLogs } from "../state/network";
-
-const NetworkList = () => {
+export const NetworkList = () => {
   const log = useSelector(selectFilteredLogs);
   return (
     <div className="widget vbox network-list">
@@ -37,7 +35,15 @@ const NetworkList = () => {
                   itemData={log}
                   overscanCount={50}
                 >
-                  {NetworkListRow}
+                  {({ index, data, style }) => {
+                    return (
+                      <NetworkListRow
+                        log={data[index]}
+                        style={style}
+                        index={index}
+                      />
+                    );
+                  }}
                 </List>
               )}
             </AutoSizer>
@@ -47,5 +53,3 @@ const NetworkList = () => {
     </div>
   );
 };
-
-export default NetworkList;

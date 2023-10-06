@@ -1,5 +1,3 @@
-// Copyright (c) 2019 SafetyCulture Pty Ltd. All Rights Reserved.
-
 import Sentencer from "sentencer";
 import { ExampleTwoRequest } from "./example2_pb";
 import {
