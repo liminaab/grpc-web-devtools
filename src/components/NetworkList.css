@@ -53,7 +53,7 @@
 }
 
 .data-grid .data .data-row.error {
-  color: rgb(216, 0, 0);
+  color: var(--error-log-color);
 }
 
 .data-grid .data-row {
@@ -107,25 +107,14 @@
 }
 
 .data-row svg path.arrow-up {
-  fill: #1976d2;
+  fill: var(--arrow-up-color);
 }
 .data-row svg path.arrow-down {
-  fill: #ff9800;
+  fill: var(--arrow-down-color);
 }
 .data-row .service-path {
-  color: #616161;
+  color: var(--service-path-color);
 }
 .data-row.selected .service-path {
-  color: #e1f5fe;
-}
-
-@media (prefers-color-scheme: light) {
-  .data-row svg path.arrow-up {
-    fill: #1976d2;
-  }
-}
-@media (prefers-color-scheme: dark) {
-  .data-row svg path.arrow-up {
-    fill: #03a9f4;
-  }
+  --service-path-color: #e1f5fe;
 }

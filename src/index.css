@@ -65,6 +65,11 @@ code {
   --network-row-even: #f5f5f5;
   --network-row-hover: #f1f6fd;
   --network-row-icon-fill: rgba(0, 0, 0, 0.2);
+
+  --arrow-up-color: #1976d2;
+  --arrow-down-color: #ff9800;
+  --error-log-color: #d80000;
+  --service-path-color: #616161;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -84,6 +89,10 @@ code {
     --network-row-even: #292929;
     --network-row-hover: #14253fb3;
     --network-row-icon-fill: rgba(255, 255, 255, 0.8);
+
+    --arrow-up-color: #03a9f4;
+    --arrow-down-color: #ff9800;
+    --error-log-color: #d80000;
   }
 
   input[type='checkbox'] {
