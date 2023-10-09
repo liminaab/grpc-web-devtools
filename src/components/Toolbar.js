@@ -29,41 +29,25 @@ export const Toolbar = () => {
   );
   const stopIsEnabled = useSelector((state) => state.network.stopLog);
 
-  const onPreserveLogChanged = (e) => {
-    dispatch(setPreserveLog(e.target.checked));
-  };
-
-  const onEnableClipboardChanged = (e) => {
-    dispatch(toggleClipboard(e.target.checked));
-  };
-
-  const onMethodFilterChange = (e) => {
-    dispatch(setMethodFilter(e.target.value));
-  };
-
-  const onContentFilterChange = (e) => {
-    dispatch(setContentFilter(e.target.value));
-  };
-
   return (
     <>
       <div className="toolbar">
         <div className="toolbar-shadow">
           <ToolbarButton
             title="Clear"
-            onClick={() => clearLog({ force: true })}
+            onClick={() => dispatch(clearLog({ force: true }))}
           >
             <ClearIcon />
           </ToolbarButton>
           <ToolbarButton
             title={stopIsEnabled ? 'Resume' : 'Stop'}
-            onClick={() => toggleStopResumeLogs()}
+            onClick={() => dispatch(toggleStopResumeLogs())}
           >
             {stopIsEnabled ? <PlayIcon /> : <StopIcon />}
           </ToolbarButton>
           <ToolbarButton
             title="Filter"
-            onClick={() => toggleFilter()}
+            onClick={() => dispatch(toggleFilter())}
             className={
               (filterIsOpen ? 'open ' : '') + (filterIsEnabled ? 'enabled' : '')
             }
@@ -79,7 +63,7 @@ export const Toolbar = () => {
               type="checkbox"
               id="ui-checkbox-preserve-log"
               checked={preserveLog}
-              onChange={onPreserveLogChanged}
+              onChange={(e) => dispatch(setPreserveLog(e.target.checked))}
             />
             <label htmlFor="ui-checkbox-preserve-log">Preserve log</label>
           </span>
@@ -92,7 +76,7 @@ export const Toolbar = () => {
               type="checkbox"
               id="ui-checkbox-clipboard-is-enabled"
               checked={clipboardIsEnabled}
-              onChange={onEnableClipboardChanged}
+              onChange={(e) => dispatch(toggleClipboard(e.target.checked))}
             />
             <label htmlFor="ui-checkbox-clipboard-is-enabled">
               Enable clipboard
@@ -109,7 +93,7 @@ export const Toolbar = () => {
                 type="text"
                 placeholder="Filter Method"
                 value={filterValue}
-                onChange={onMethodFilterChange}
+                onChange={(e) => dispatch(setMethodFilter(e.target.value))}
               />
             </span>
             <span className="toolbar-item text">
@@ -118,7 +102,7 @@ export const Toolbar = () => {
                 type="text"
                 placeholder="Filter Content"
                 value={filterValue}
-                onChange={onContentFilterChange}
+                onChange={(e) => dispatch(setContentFilter(e.target.value))}
               />
             </span>
           </div>
