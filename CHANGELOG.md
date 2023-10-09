@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2.2.1 - 2023.10.09
+
+- refactor: change to function components and set more CSS variables.
+
 ## 2.2.0 - 2023.10.04
 
 - fix: row selection selecting wrong data.
