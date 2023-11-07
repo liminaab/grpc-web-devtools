@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 2.3.0 - 2023.11.07
+
+- feat: add timestamp.
+- feat: add exclude filter.
+
 ## 2.2.1 - 2023.10.09
 
 - refactor: change to function components and set more CSS variables.
