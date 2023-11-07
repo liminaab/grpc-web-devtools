@@ -1,12 +1,13 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 const toolbarSlice = createSlice({
-  name: "toolbar",
+  name: 'toolbar',
   initialState: {
     filterIsOpen: true,
     filterIsEnabled: false,
-    methodFilter: "",
-    contentFilter: "",
+    methodFilter: '',
+    contentFilter: '',
+    excludeContentFilter: '',
   },
   reducers: {
     toggleFilter(state) {
@@ -15,27 +16,35 @@ const toolbarSlice = createSlice({
     setMethodFilter(state, action) {
       const { payload } = action;
       state.methodFilter = payload;
-      state.filterIsEnabled = isAnyFilterEnabled(
-        state.methodFilter,
-        state.contentFilter
-      );
+      state.filterIsEnabled = isAnyFilterEnabled(state);
     },
     setContentFilter(state, action) {
       const { payload } = action;
       state.contentFilter = payload;
-      state.filterIsEnabled = isAnyFilterEnabled(
-        state.methodFilter,
-        state.contentFilter
-      );
+      state.filterIsEnabled = isAnyFilterEnabled(state);
+    },
+    setExcludeContentFilter(state, action) {
+      const { payload } = action;
+      state.excludeContentFilter = payload;
+      state.filterIsEnabled = isAnyFilterEnabled(state);
     },
   },
 });
 
-function isAnyFilterEnabled(methodFilter, contentFilter) {
-  return methodFilter?.length > 0 || contentFilter?.length > 0;
+function isAnyFilterEnabled(state) {
+  return (
+    state.methodFilter?.length > 0 ||
+    state.contentFilter?.length > 0 ||
+    state.excludeContentFilter?.length > 0
+  );
 }
 
 const { actions, reducer } = toolbarSlice;
-export const { toggleFilter, setContentFilter, setMethodFilter } = actions;
+export const {
+  toggleFilter,
+  setContentFilter,
+  setMethodFilter,
+  setExcludeContentFilter,
+} = actions;
 
 export default reducer;

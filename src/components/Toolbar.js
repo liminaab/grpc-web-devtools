@@ -9,6 +9,7 @@ import {
   toggleFilter,
   setMethodFilter,
   setContentFilter,
+  setExcludeContentFilter,
 } from '../state/toolbar';
 import { toggleClipboard } from '../state/clipboard';
 import ClearIcon from '../icons/Clear';
@@ -97,12 +98,23 @@ export const Toolbar = () => {
               />
             </span>
             <span className="toolbar-item text">
-              Content:{' '}
+              Include Content:{' '}
               <input
                 type="text"
-                placeholder="Filter Content"
+                placeholder="Include Content Filter"
                 value={filterValue}
                 onChange={(e) => dispatch(setContentFilter(e.target.value))}
+              />
+            </span>
+            <span className="toolbar-item text">
+              Exclude Content:{' '}
+              <input
+                type="text"
+                placeholder="Exclude Content Filter"
+                value={filterValue}
+                onChange={(e) =>
+                  dispatch(setExcludeContentFilter(e.target.value))
+                }
               />
             </span>
           </div>

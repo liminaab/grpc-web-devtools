@@ -1,8 +1,12 @@
-import { createSelector, createSlice } from "@reduxjs/toolkit";
-import { setMethodFilter, setContentFilter } from "./toolbar";
+import { createSelector, createSlice } from '@reduxjs/toolkit';
+import {
+  setMethodFilter,
+  setContentFilter,
+  setExcludeContentFilter,
+} from './toolbar';
 
 const networkSlice = createSlice({
-  name: "network",
+  name: 'network',
   initialState: {
     logs: [],
     preserveLog: false,
@@ -13,8 +17,9 @@ const networkSlice = createSlice({
      * This way only new logs are filtered and added or not to the filteredLogs array.
      */
     _filteredLogs: [],
-    _methodFilter: "",
-    _contentFilter: "",
+    _methodFilter: '',
+    _contentFilter: '',
+    _excludeContentFilter: '',
   },
   reducers: {
     networkLog(state, action) {
@@ -23,7 +28,7 @@ const networkSlice = createSlice({
       if (!stopLog) {
         const { payload: log } = action;
         if (log.method) {
-          const parts = log.method.split("/");
+          const parts = log.method.split('/');
           log.endpoint = parts.pop() || parts.pop();
         }
         logs.push(log);
@@ -60,48 +65,59 @@ const networkSlice = createSlice({
   },
   extraReducers: {
     [setMethodFilter]: (state, action) => {
-      const { payload: filterValue = "" } = action;
+      const { payload: filterValue = '' } = action;
       state._methodFilter = filterValue;
-      state._filteredLogs = filterLogs(
-        state.logs,
-        state._methodFilter,
-        state._contentFilter
-      );
+      state._filteredLogs = filterLogs(state);
     },
     [setContentFilter]: (state, action) => {
-      const { payload: filterValue = "" } = action;
+      const { payload: filterValue = '' } = action;
       state._contentFilter = filterValue;
-      state._filteredLogs = filterLogs(
-        state.logs,
-        state._methodFilter,
-        state._contentFilter
-      );
+      state._filteredLogs = filterLogs(state);
+    },
+    [setExcludeContentFilter]: (state, action) => {
+      const { payload: filterValue = '' } = action;
+      state._excludeContentFilter = filterValue;
+      state._filteredLogs = filterLogs(state);
     },
   },
 });
 
 export const selectFilteredLogs = createSelector(
   [(state) => state.network._filteredLogs],
-  (logs) => {
-    return logs;
-  }
+  (logs) => logs
 );
 
-function filterLogs(logs, methodFilter, contentFilter) {
-  const lcMethodFilter = methodFilter.toLowerCase();
-  const lcContentFilter = contentFilter.toLowerCase();
+function filterLogs({
+  logs,
+  _contentFilter,
+  _methodFilter,
+  _excludeContentFilter,
+}) {
+  const methodFilter = _methodFilter.toLowerCase();
+  const contentFilter = _contentFilter.toLowerCase();
+  const excludeContentFilter = _excludeContentFilter.toLowerCase();
   return logs.filter((l) =>
-    logCompliesWithFilters(l, lcMethodFilter, lcContentFilter)
+    logCompliesWithFilters(l, methodFilter, contentFilter, excludeContentFilter)
   );
 }
 
-function logCompliesWithFilters(log, methodFilter, contentFilter) {
-  return (
-    log.method?.toLowerCase().includes(methodFilter) &&
-    // TODO implement recursive search?
-    (!contentFilter ||
-      JSON.stringify(log).toLowerCase().includes(contentFilter))
-  );
+function logCompliesWithFilters(
+  log,
+  methodFilter,
+  contentFilter,
+  excludeContentFilter
+) {
+  if (!log.method?.toLowerCase().includes(methodFilter)) {
+    return false;
+  }
+  const strLog = JSON.stringify(log).toLowerCase();
+  if (contentFilter && !strLog.includes(contentFilter)) {
+    return false;
+  }
+  if (excludeContentFilter && strLog.includes(excludeContentFilter)) {
+    return false;
+  }
+  return true;
 }
 
 const { actions, reducer } = networkSlice;
