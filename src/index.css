@@ -127,10 +127,3 @@ code {
   flex: auto;
   contain: style;
 }
-
-.timestamp {
-  height: 24px;
-  width: 100%;
-  color: var(--text-color);
-  font-weight: bold;
-}

@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createSelector } from '@reduxjs/toolkit';
 
 const toolbarSlice = createSlice({
   name: 'toolbar',
@@ -8,6 +8,7 @@ const toolbarSlice = createSlice({
     methodFilter: '',
     contentFilter: '',
     excludeContentFilter: '',
+    selectedTheme: undefined,
   },
   reducers: {
     toggleFilter(state) {
@@ -28,8 +29,24 @@ const toolbarSlice = createSlice({
       state.excludeContentFilter = payload;
       state.filterIsEnabled = isAnyFilterEnabled(state);
     },
+    setSelectedTheme(state, action) {
+      const { payload } = action;
+      state.selectedTheme = payload;
+    },
   },
 });
+
+function getDefaultTheme() {
+  const theme = window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'monokai'
+    : 'rjv-default';
+  return theme;
+}
+
+export const selectTheme = createSelector(
+  [(state) => state.toolbar.selectedTheme, getDefaultTheme],
+  (theme, defaultTheme) => theme || defaultTheme
+);
 
 function isAnyFilterEnabled(state) {
   return (
@@ -45,6 +62,7 @@ export const {
   setContentFilter,
   setMethodFilter,
   setExcludeContentFilter,
+  setSelectedTheme,
 } = actions;
 
 export default reducer;

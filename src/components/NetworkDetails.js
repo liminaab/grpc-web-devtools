@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import ReactJson from 'react-json-view';
 import { useSelector } from 'react-redux';
+import { selectTheme } from '../state/toolbar';
 import './NetworkDetails.css';
 
 const timeFormatter = new Intl.DateTimeFormat(undefined, {
@@ -17,6 +18,7 @@ export const NetworkDetails = () => {
   const clipboardIsEnabled = useSelector(
     (state) => state.clipboard.clipboardIsEnabled
   );
+  const theme = useSelector(selectTheme);
 
   const src = useMemo(() => {
     if (entry) {
@@ -34,10 +36,6 @@ export const NetworkDetails = () => {
       return src;
     }
   }, [entry]);
-
-  const theme = window.matchMedia('(prefers-color-scheme: dark)').matches
-    ? 'monokai'
-    : 'rjv-default';
 
   return (
     <div className="widget vbox details-data">

@@ -29,5 +29,5 @@
       "all_frames": true
     }
   ],
-  "permissions": []
+  "permissions": ["storage"]
 }
