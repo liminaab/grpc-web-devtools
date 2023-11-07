@@ -47,6 +47,7 @@ code {
 }
 
 :root {
+  --text-color: #000;
   --accent-color: #1a73e8;
   --toolbar-bg-color: #f3f3f3;
   --toolbar-color: #5a5a5a;
@@ -55,7 +56,7 @@ code {
   --divider-color: #d0d0d0;
   --selection-bg-color: var(--accent-color);
   --selection-fg-color: white;
-  --toolbar-input-text: #000;
+  --toolbar-input-text: var(--text-color);
   --toolbar-input-bg: #fff;
   --focus-ring-inactive-shadow: 0 0 0 1px #e0e0e0;
   --focus-ring-active-shadow: 0 0 0 1px var(--accent-color);
@@ -74,12 +75,13 @@ code {
 
 @media (prefers-color-scheme: dark) {
   :root {
+    --text-color: #bdc6cf;
     --accent-color: #0e639c;
     --toolbar-bg-color: #333333;
     --toolbar-color: #a5a5a5;
     --toolbar-color-hover: #ccc;
     --divider-border: 1px solid #3d3d3d;
-    --toolbar-input-text: #bdc6cf;
+    --toolbar-input-text: var(--text-color);
     --toolbar-input-bg: #242424;
     --focus-ring-inactive-shadow: 0 0 0 1px #5a5a5a;
     --focus-ring-active-shadow: 0 0 0 1px var(--accent-color);

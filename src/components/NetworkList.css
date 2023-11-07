@@ -61,9 +61,6 @@
   cursor: pointer;
   height: 21px;
   vertical-align: middle;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
   line-height: 18px;
   padding: 1px 4px;
 }
@@ -106,6 +103,10 @@
   overflow-x: hidden;
 }
 
+.data-row {
+  min-width: max-content !important;
+}
+
 .data-row svg path.arrow-up {
   fill: var(--arrow-up-color);
 }
@@ -115,6 +116,23 @@
 .data-row .service-path {
   color: var(--service-path-color);
 }
-.data-row.selected .service-path {
+.data-row.selected {
   --service-path-color: #e1f5fe;
+}
+
+.data-row-item {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.data-row-item .method {
+  display: block;
+  white-space: unset;
+}
+
+.data-row-item .timestamp {
+  color: var(--service-path-color);
 }

@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import ReactJson from 'react-json-view';
 import { useSelector } from 'react-redux';
+import { selectTheme } from '../state/toolbar';
 import './NetworkDetails.css';
 
 export const NetworkDetails = () => {
@@ -8,6 +9,7 @@ export const NetworkDetails = () => {
   const clipboardIsEnabled = useSelector(
     (state) => state.clipboard.clipboardIsEnabled
   );
+  const theme = useSelector(selectTheme);
 
   const src = useMemo(() => {
     if (entry) {
@@ -26,19 +28,17 @@ export const NetworkDetails = () => {
     }
   }, [entry]);
 
-  const theme = window.matchMedia('(prefers-color-scheme: dark)').matches
-    ? 'twilight'
-    : 'rjv-default';
-
   return (
     <div className="widget vbox details-data">
-      {entry != null && (
+      {src != null && (
         <ReactJson
           name="grpc"
           theme={theme}
-          style={{ backgroundColor: 'transparent' }}
+          style={{ backgroundColor: 'transparent', flex: 1 }}
           enableClipboard={clipboardIsEnabled}
           src={src}
+          displayDataTypes={false}
+          indentWidth={2}
         />
       )}
     </div>

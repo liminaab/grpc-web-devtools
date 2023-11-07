@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   setPreserveLog,
@@ -9,12 +9,16 @@ import {
   toggleFilter,
   setMethodFilter,
   setContentFilter,
+  setExcludeContentFilter,
+  setSelectedTheme,
+  selectTheme,
 } from '../state/toolbar';
 import { toggleClipboard } from '../state/clipboard';
 import ClearIcon from '../icons/Clear';
 import StopIcon from '../icons/Stop';
 import PlayIcon from '../icons/Play';
 import FilterIcon from '../icons/Filter';
+import { themes } from './themes';
 import './Toolbar.css';
 
 export const Toolbar = () => {
@@ -28,6 +32,17 @@ export const Toolbar = () => {
     (state) => state.clipboard.clipboardIsEnabled
   );
   const stopIsEnabled = useSelector((state) => state.network.stopLog);
+  const selectedTheme = useSelector(selectTheme);
+
+  useEffect(() => {
+    // eslint-disable-next-line no-undef
+    chrome.storage.sync.get(['theme']).then(({ theme }) => {
+      dispatch(setSelectedTheme(theme));
+    });
+  }, [dispatch]);
+
+  const isDarkMode =
+    window.matchMedia('(prefers-color-scheme: dark)').matches === true;
 
   return (
     <>
@@ -82,6 +97,34 @@ export const Toolbar = () => {
               Enable clipboard
             </label>
           </span>
+
+          <ToolbarDivider />
+          <span className="toolbar-item" title="Select theme">
+            <label htmlFor="ui-select-theme">Theme: </label>
+            <select
+              id="ui-select-theme"
+              onChange={(event) => {
+                const theme = event.target.value;
+                dispatch(setSelectedTheme(theme));
+                // eslint-disable-next-line no-undef
+                chrome.storage.sync.set({ theme });
+              }}
+            >
+              {themes
+                .filter(({ dark }) => dark === isDarkMode)
+                .map(({ value: theme }) => {
+                  return (
+                    <option
+                      key={theme}
+                      value={theme}
+                      selected={theme === selectedTheme}
+                    >
+                      {theme}
+                    </option>
+                  );
+                })}
+            </select>
+          </span>
         </div>
       </div>
       {filterIsOpen === true && (
@@ -97,12 +140,23 @@ export const Toolbar = () => {
               />
             </span>
             <span className="toolbar-item text">
-              Content:{' '}
+              Include Content:{' '}
               <input
                 type="text"
-                placeholder="Filter Content"
+                placeholder="Include Content Filter"
                 value={filterValue}
                 onChange={(e) => dispatch(setContentFilter(e.target.value))}
+              />
+            </span>
+            <span className="toolbar-item text">
+              Exclude Content:{' '}
+              <input
+                type="text"
+                placeholder="Exclude Content Filter"
+                value={filterValue}
+                onChange={(e) =>
+                  dispatch(setExcludeContentFilter(e.target.value))
+                }
               />
             </span>
           </div>
