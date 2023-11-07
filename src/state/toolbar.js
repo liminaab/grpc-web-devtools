@@ -1,5 +1,3 @@
-// Copyright (c) 2019 SafetyCulture Pty Ltd. All Rights Reserved.
-
 import { createSlice } from "@reduxjs/toolkit";
 
 const toolbarSlice = createSlice({

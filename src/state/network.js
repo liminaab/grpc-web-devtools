@@ -1,5 +1,3 @@
-// Copyright (c) 2019 SafetyCulture Pty Ltd. All Rights Reserved.
-
 import { createSelector, createSlice } from "@reduxjs/toolkit";
 import { setMethodFilter, setContentFilter } from "./toolbar";
 

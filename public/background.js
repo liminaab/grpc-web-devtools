@@ -1,5 +1,3 @@
-// Copyright (c) 2019 SafetyCulture Pty Ltd. All Rights Reserved.
-
 // Map of Panel connections. The 'tabId' is used as key.
 // There are two connections/ports for every tabId
 // 1) Port to the panel script
@@ -10,13 +8,16 @@
 // connections[1].content => content port
 var connections = {};
 
-chrome.runtime.onConnect.addListener(port => {
+chrome.runtime.onConnect.addListener((port) => {
   if (port.name != "panel" && port.name != "content") {
     return;
   }
 
-  var extensionListener = message => {
-    var tabId = port.sender.tab && port.sender.tab.id >= 0 ? port.sender.tab.id : message.tabId;
+  var extensionListener = (message) => {
+    var tabId =
+      port.sender.tab && port.sender.tab.id >= 0
+        ? port.sender.tab.id
+        : message.tabId;
 
     // The original connection event doesn't include the tab ID of the
     // DevTools page, so we need to send it explicitly (attached

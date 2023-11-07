@@ -1,5 +1,3 @@
-// Copyright (c) 2019 SafetyCulture Pty Ltd. All Rights Reserved.
-
 // Inject script for grpc-web
 let s = document.createElement("script");
 s.type = "text/javascript";
