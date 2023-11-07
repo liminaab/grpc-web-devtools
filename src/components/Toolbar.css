@@ -106,3 +106,8 @@
   border-right: 0;
   color: var(--toolbar-color);
 }
+
+.toolbar-item select,
+.toolbar-item input[type='checkbox'] {
+  cursor: pointer;
+}

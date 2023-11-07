@@ -7,10 +7,3 @@
 .react-json-view svg {
   height: 0.9em !important;
 }
-
-.timestamp {
-  height: 24px;
-  width: 100%;
-  color: var(--text-color);
-  font-weight: bold;
-}

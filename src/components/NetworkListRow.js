@@ -2,6 +2,7 @@ import React, { memo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectLogEntry } from '../state/network';
 import { MethodIcon } from './MethodIcon';
+import { formatTimestamp } from './date.utils';
 
 // log: {"type":"__GRPCWEB_DEVTOOLS__","method":"FULL URL","methodType":"server_streaming","request": object,"endpoint":"END OF URL AFTER LAST /"}
 
@@ -18,8 +19,13 @@ export const NetworkListRow = memo(({ log, style, index }) => {
       onClick={() => dispatch(selectLogEntry(log))}
       tabIndex={index}
     >
-      <MethodIcon methodType={log.methodType} isRequest={!!log.request} />
-      <Endpoint endpoint={log.endpoint} method={log.method} />
+      <div className="data-row-item">
+        <span className="method">
+          <MethodIcon methodType={log.methodType} isRequest={!!log.request} />
+          <Endpoint endpoint={log.endpoint} method={log.method} />
+        </span>
+        <span className="timestamp">{formatTimestamp(log.timestamp)}</span>
+      </div>
     </div>
   );
 });
