@@ -3,6 +3,13 @@ import ReactJson from 'react-json-view';
 import { useSelector } from 'react-redux';
 import './NetworkDetails.css';
 
+const timeFormatter = new Intl.DateTimeFormat(undefined, {
+  timeStyle: 'long',
+  fractionalSecondDigits: 3,
+});
+const formatTimestamp = (timestamp) =>
+  timeFormatter.format(new Date(timestamp));
+
 export const NetworkDetails = () => {
   const entry = useSelector((state) => state.network.selectedEntry);
   const clipboardIsEnabled = useSelector(
@@ -27,19 +34,24 @@ export const NetworkDetails = () => {
   }, [entry]);
 
   const theme = window.matchMedia('(prefers-color-scheme: dark)').matches
-    ? 'twilight'
+    ? 'monokai'
     : 'rjv-default';
 
   return (
     <div className="widget vbox details-data">
-      {entry != null && (
-        <ReactJson
-          name="grpc"
-          theme={theme}
-          style={{ backgroundColor: 'transparent' }}
-          enableClipboard={clipboardIsEnabled}
-          src={src}
-        />
+      {src != null && (
+        <>
+          <div className="timestamp">{formatTimestamp(entry.timestamp)}</div>
+          <ReactJson
+            name="grpc"
+            theme={theme}
+            style={{ backgroundColor: 'transparent', flex: 1 }}
+            enableClipboard={clipboardIsEnabled}
+            src={src}
+            displayDataTypes={false}
+            indentWidth={2}
+          />
+        </>
       )}
     </div>
   );

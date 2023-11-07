@@ -23,10 +23,21 @@ const networkSlice = createSlice({
   },
   reducers: {
     networkLog(state, action) {
-      const { logs, _filteredLogs, stopLog, _contentFilter, _methodFilter } =
-        state;
+      const {
+        logs,
+        _filteredLogs,
+        stopLog,
+        _contentFilter,
+        _methodFilter,
+        _excludeContentFilter,
+      } = state;
       if (!stopLog) {
         const { payload: log } = action;
+
+        // custom fields
+        //! Must be added to logCompliesWithFilters() method
+        log.timestamp = Date.now();
+
         if (log.method) {
           const parts = log.method.split('/');
           log.endpoint = parts.pop() || parts.pop();
@@ -36,7 +47,8 @@ const networkSlice = createSlice({
           logCompliesWithFilters(
             log,
             _contentFilter.toLowerCase(),
-            _methodFilter.toLowerCase()
+            _methodFilter.toLowerCase(),
+            _excludeContentFilter.toLowerCase()
           )
         ) {
           _filteredLogs.push(log);
@@ -110,7 +122,9 @@ function logCompliesWithFilters(
   if (!log.method?.toLowerCase().includes(methodFilter)) {
     return false;
   }
-  const strLog = JSON.stringify(log).toLowerCase();
+  // delete custom fields
+  const { timestamp, ...logWithoutCustomFields } = log;
+  const strLog = JSON.stringify(logWithoutCustomFields).toLowerCase();
   if (contentFilter && !strLog.includes(contentFilter)) {
     return false;
   }
