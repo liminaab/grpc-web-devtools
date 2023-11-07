@@ -4,7 +4,9 @@ import { useSelector } from 'react-redux';
 import './NetworkDetails.css';
 
 const timeFormatter = new Intl.DateTimeFormat(undefined, {
-  timeStyle: 'long',
+  hour: 'numeric',
+  minute: 'numeric',
+  second: 'numeric',
   fractionalSecondDigits: 3,
 });
 const formatTimestamp = (timestamp) =>
