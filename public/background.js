@@ -1,64 +1,49 @@
-// Map of Panel connections. The 'tabId' is used as key.
-// There are two connections/ports for every tabId
-// 1) Port to the panel script
-// 2) Port to the content script
-//
-// Example:
-// connections[1].panel => pane port
-// connections[1].content => content port
-var connections = {};
+const tabIdToPanelPort = new Map();
 
 chrome.runtime.onConnect.addListener((port) => {
-  if (port.name != "panel" && port.name != "content") {
+  if (port.name !== 'panel') {
     return;
   }
 
-  var extensionListener = (message) => {
-    var tabId =
-      port.sender.tab && port.sender.tab.id >= 0
-        ? port.sender.tab.id
-        : message.tabId;
-
-    // The original connection event doesn't include the tab ID of the
-    // DevTools page, so we need to send it explicitly (attached
-    // to the 'init' event).
-    if (message.action == "init") {
-      if (!connections[tabId]) {
-        connections[tabId] = {};
-      }
-      connections[tabId][port.name] = port;
-      return;
+  function handlePortMessage(message) {
+    if (!message) return;
+    if (message.action === 'init' && typeof message.tabId === 'number') {
+      tabIdToPanelPort.set(message.tabId, port);
     }
+  }
 
-    // Other messages are relayed to specified target if any
-    // and if the connection exists.
-    if (message.target) {
-      var conn = connections[tabId][message.target];
-      if (conn) {
-        conn.postMessage(message);
-      }
-    }
-  };
+  port.onMessage.addListener(handlePortMessage);
 
-  // Listen to messages sent from the panel script.
-  port.onMessage.addListener(extensionListener);
-
-  // Remove panel connection on disconnect.
-  port.onDisconnect.addListener(function (port) {
-    port.onMessage.removeListener(extensionListener);
-
-    var tabs = Object.keys(connections);
-    for (var i = 0, len = tabs.length; i < len; i++) {
-      if (connections[tabs[i]][port.name] === port) {
-        delete connections[tabs[i]][port.name];
-
-        // If there is not port associated to the tab, remove it
-        // from the connections map.
-        if (Object.keys(connections[tabs[i]]).length === 0) {
-          delete connections[tabs[i]];
-        }
-        break;
+  port.onDisconnect.addListener(() => {
+    for (const [tabId, p] of tabIdToPanelPort.entries()) {
+      if (p === port) {
+        tabIdToPanelPort.delete(tabId);
       }
     }
   });
 });
+
+chrome.runtime.onMessage.addListener((message, sender) => {
+  if (!message) return;
+  if (message.action === 'gRPCNetworkCall') {
+    const tabId = sender?.tab?.id;
+    const panelPort = tabIdToPanelPort.get(tabId);
+    if (panelPort) {
+      panelPort.postMessage({ action: 'gRPCNetworkCall', data: message.data });
+    }
+  }
+});
+
+// Notify panel when the inspected tab navigates to clear logs.
+// Requires the panel to have registered via 'init'.
+chrome.tabs && chrome.tabs.onUpdated && chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
+  if (changeInfo && changeInfo.status === 'loading') {
+    const panelPort = tabIdToPanelPort.get(tabId);
+    if (panelPort) {
+      panelPort.postMessage({ action: 'tabNavigated' });
+    }
+  }
+});
+
+
+

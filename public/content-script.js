@@ -1,49 +1,50 @@
-// Inject script for grpc-web
-let s = document.createElement("script");
-s.type = "text/javascript";
-s.src = chrome.runtime.getURL("inject.js");
-s.onload = function () {
-  this.parentNode.removeChild(this);
-};
-(document.head || document.documentElement).appendChild(s);
+// Inject our page script to access the page context
+(function inject() {
+  try {
+    // Only proceed if extension context is alive and APIs exist
+    if (!(typeof window !== 'undefined' && window.chrome && chrome.runtime && typeof chrome.runtime.getURL === 'function')) return;
+    const script = document.createElement('script');
+    script.src = chrome.runtime.getURL('inject.js');
+    script.async = false;
+    (document.head || document.documentElement).appendChild(script);
+    script.parentNode && script.parentNode.removeChild(script);
+  } catch (e) {}
+})();
 
-// Inject script for connect-web
-var cs = document.createElement("script");
-cs.src = chrome.runtime.getURL("connect-web-interceptor.js");
-cs.onload = function () {
-  this.remove();
-};
-(document.head || document.documentElement).appendChild(cs);
-
-var port;
-
-function setupPortIfNeeded() {
-  if (!port && chrome && chrome.runtime) {
-    port = chrome.runtime.connect(null, { name: "content" });
-    port.postMessage({ action: "init" });
-    port.onDisconnect.addListener(() => {
-      port = null;
-      window.removeEventListener("message", handleMessageEvent, false);
-    });
+function isExtensionContextAlive() {
+  try {
+    // Accessing chrome.runtime.id can throw if the context is invalidated
+    return !!(typeof chrome !== 'undefined' && chrome && chrome.runtime && chrome.runtime.id);
+  } catch (e) {
+    return false;
   }
 }
 
-function sendGRPCNetworkCall(data) {
-  setupPortIfNeeded();
-  if (port) {
-    port.postMessage({
-      action: "gRPCNetworkCall",
-      target: "panel",
-      data,
-    });
+// Listen to page events and forward them to background
+function handlePageMessage(event) {
+  if (event.source !== window) return;
+  const message = event.data;
+  if (!message || typeof message !== 'object') return;
+
+  // If context got invalidated (e.g., extension reloaded), stop listening
+  if (!isExtensionContextAlive()) {
+    try { window.removeEventListener('message', handlePageMessage); } catch (_) {}
+    return;
+  }
+
+  if (message.type === '__GRPCWEB_DEVTOOLS__') {
+    try {
+      if (isExtensionContextAlive() && typeof chrome.runtime.sendMessage === 'function') {
+        chrome.runtime.sendMessage({ action: 'gRPCNetworkCall', data: message });
+      }
+    } catch (e) {
+      // If the extension context is invalidated (e.g., extension reloaded), stop listening
+      try { window.removeEventListener('message', handlePageMessage); } catch (_) {}
+    }
   }
 }
 
-function handleMessageEvent(event) {
-  if (event.source != window) return;
-  if (event.data.type && event.data.type == "__GRPCWEB_DEVTOOLS__") {
-    sendGRPCNetworkCall(event.data);
-  }
-}
+window.addEventListener('message', handlePageMessage);
 
-window.addEventListener("message", handleMessageEvent, false);
+
+
