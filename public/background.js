@@ -7,7 +7,7 @@ chrome.runtime.onConnect.addListener((port) => {
 
   function handlePortMessage(message) {
     if (!message) return;
-    if (message.action === 'init' && typeof message.tabId === 'number') {
+    if ((message.action === 'init' || message.action === 'heartbeat') && typeof message.tabId === 'number') {
       tabIdToPanelPort.set(message.tabId, port);
     }
   }

@@ -10,7 +10,7 @@ import networkReducer, { networkLog, clearLog } from './state/network';
 import toolbarReducer from './state/toolbar';
 import clipboardReducer from './state/clipboard';
 
-var port, tabId, reconnectTimer;
+var port, tabId, reconnectTimer, heartbeatTimer;
 
 function connectToBackground() {
   if (!chrome || !chrome.runtime) return;
@@ -25,6 +25,8 @@ function connectToBackground() {
       // Schedule reconnect; SW may have been suspended
       scheduleReconnect();
     });
+    // Start heartbeat to keep the service worker alive and mapping fresh
+    startHeartbeat();
   } catch (e) {
     scheduleReconnect();
   }
@@ -36,6 +38,32 @@ function scheduleReconnect() {
     reconnectTimer = null;
     connectToBackground();
   }, 1000);
+}
+
+function startHeartbeat() {
+  stopHeartbeat();
+  try {
+    // Ping every 15s; SW idle timeout is ~30s
+    heartbeatTimer = setInterval(() => {
+      try {
+        if (port) {
+          port.postMessage({ action: 'heartbeat', tabId });
+        } else {
+          // No port, attempt reconnect
+          scheduleReconnect();
+        }
+      } catch (e) {
+        scheduleReconnect();
+      }
+    }, 15000);
+  } catch (e) {}
+}
+
+function stopHeartbeat() {
+  if (heartbeatTimer) {
+    clearInterval(heartbeatTimer);
+    heartbeatTimer = null;
+  }
 }
 
 // Initial connection from DevTools panel
